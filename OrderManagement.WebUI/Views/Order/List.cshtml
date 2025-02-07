@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Order List";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Here are the orders!</p>
+<table style="width:100%" id="ordersTable">
+    <tr>
+        <th>Id</th>
+        <th>Product Name</th>
+        <th>Status</th>
+    </tr>
+</table>
+<a href="/order/new">Add New</a>
+
+<script>
+    $(document).ready(function () {
+
+        window.call({
+            path: "v1/order",
+            type: "get",
+            data: {},
+            success: (result) => {
+
+                //unsecure add, just for demo purpose
+                $.each(result.Entity.Collection, function(index, item) {
+                    $('#ordersTable').append(
+                        `<tr><td>`+item.Id+`</td><td>`+item.ProductName+`</td><td>`+item.Status+`</td><td><a href="/order?id=`+item.Id+`">Detail</a></td></tr>`);
+                });
+                
+            }
+        });
+    });
+</script>

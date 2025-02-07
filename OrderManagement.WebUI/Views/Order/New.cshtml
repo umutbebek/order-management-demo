@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "New Order";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Please enter new order details!</p>
+
+<div>
+    <div>
+        <span>Product Name</span>
+        <input type="text" id="name" >
+    </div>
+    <div>
+        <span>Price</span>
+        <input type="number" id="price">
+    </div>
+    <div>
+        <button id="save">Save</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#save').click(() => {
+
+            window.call({
+                path: "v1/order",
+                type: "post",
+                //should not take the decimal place like this, for demo
+                data: { ProductName: $('#name').val(), Price: $('#price').val() },
+                success: (result) => {
+                    window.alert("Added the new order to queue!");
+                    window.location = "/order/list";
+                }
+            });
+        });
+    });
+</script>
