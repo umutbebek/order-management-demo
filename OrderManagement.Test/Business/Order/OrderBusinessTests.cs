@@ -1,5 +1,8 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OrderManagement.Business.Order;
+using OrderManagement.Data;
 using OrderManagement.Model.Orders;
 using Xunit;
 
@@ -11,7 +14,12 @@ namespace OrderManagement.Test.Business.Order
 
         public OrderBusinessTests()
         {
-            _orderBusiness = new OrderBusiness();
+            var options = new DbContextOptionsBuilder<OrderManagementContext>()
+                .UseInMemoryDatabase(databaseName: "TestOrderManagementContextDb")
+                .Options;
+            var context = new OrderManagementContext(options);
+            Seeder.Seed(context);
+            _orderBusiness = new OrderBusiness(context);
         }
         [Fact]
         public void Get_NotExists()
