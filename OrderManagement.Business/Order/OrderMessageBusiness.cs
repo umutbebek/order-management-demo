@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 
 namespace OrderManagement.Business.Order
 {
-    public class OrderMessageBusiness : BaseMessageBusiness
+    public class OrderMessageBusiness : BaseMessageBusiness, IOrderMessageBusiness
     {
         public async Task Add(OrderDto dto)
         {

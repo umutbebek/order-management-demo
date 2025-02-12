@@ -12,18 +12,24 @@ namespace OrderManagement.Api.Controllers.Order
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly ILogger<OrderController> _logger;
+        private readonly IOrderBusiness _orderBusiness;
+        private readonly IOrderMessageBusiness _orderMessageBusiness;
 
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController(
+            ILogger<OrderController> logger,
+            IOrderBusiness orderBusiness,
+            IOrderMessageBusiness orderMessageBusiness)
         {
             _logger = logger;
+            _orderBusiness = orderBusiness;
+            _orderMessageBusiness = orderMessageBusiness;
         }
 
         [HttpGet]
         [Route("")]
         public ActionResult List()
         {
-            var business = new OrderBusiness();
-            var orders = business.List();
+            var orders = _orderBusiness.List();
 
             return Answer(new ResponseDto<PageDto<OrderDto>>
             {
@@ -35,8 +41,7 @@ namespace OrderManagement.Api.Controllers.Order
         [Route("{id}")]
         public ActionResult Get(long id)
         {
-            var business = new OrderBusiness();
-            var order = business.Get(id);
+            var order = _orderBusiness.Get(id);
 
             return Answer(new ResponseDto<OrderDto>
             {
@@ -50,8 +55,7 @@ namespace OrderManagement.Api.Controllers.Order
         [Route("")]
         public async Task<ActionResult> New(OrderDto dto)
         {
-            var business = new OrderMessageBusiness();
-            await business.Add(dto);
+            await _orderMessageBusiness.Add(dto);
 
             //empty response for success
             return Answer(new ResponseDto<BaseDto>());
@@ -61,8 +65,7 @@ namespace OrderManagement.Api.Controllers.Order
         [Route("process")]
         public ActionResult Process(OrderDto dto)
         {
-            var business = new OrderBusiness();
-            var order = business.New(dto);
+            var order = _orderBusiness.New(dto);
 
             return Answer(new ResponseDto<OrderDto>
             {

@@ -54,9 +54,9 @@ namespace OrderManagement.Processor
         {
             if (!string.IsNullOrWhiteSpace(_consumerTag) && _channel != null)
                 await _channel.BasicCancelAsync(_consumerTag);
-            if(_channel != null)
+            if (_channel != null)
                 await _channel.CloseAsync();
-            if(_connection != null)
+            if (_connection != null)
                 await _connection.CloseAsync();
 
             await base.StopAsync(cancellationToken);
@@ -79,20 +79,19 @@ namespace OrderManagement.Processor
                 if (order is null)
                 {
                     await _channel.BasicRejectAsync(args.DeliveryTag, false);
+                    return;
                 }
-                else
-                {
-                    order.Status = "Approved";
 
-                    var restApi = new RestApi();
-                    await restApi.Call(ApiUrl + "v1/order/process", HttpMethod.Post, order);
-                    
-                    await _channel.BasicAckAsync(args.DeliveryTag, false);
-                }
+                order.Status = "Approved";
+
+                var restApi = new RestApi();
+                await restApi.Call(ApiUrl + "v1/order/process", HttpMethod.Post, order);
+
+                await _channel.BasicAckAsync(args.DeliveryTag, false);
             };
 
             _consumerTag = await _channel.BasicConsumeAsync(MQQueu, false, consumer);
-            
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_logger.IsEnabled(LogLevel.Information))

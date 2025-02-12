@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using OrderManagement.Business.Order;
+using OrderManagement.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<OrderManagementContext>(options =>
+{
+    options.UseInMemoryDatabase("OrderManagementContextDb");
+}, ServiceLifetime.Singleton);
+builder.Services.AddScoped<IOrderBusiness, OrderBusiness>();
+builder.Services.AddScoped<IOrderMessageBusiness, OrderMessageBusiness>();
+
 
 var app = builder.Build();
 
@@ -29,4 +41,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+Seeder.Seed(app.Services.GetService<OrderManagementContext>());
+
 app.Run();
+

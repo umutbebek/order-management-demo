@@ -5,12 +5,19 @@ using OrderManagement.Model.Orders;
 
 namespace OrderManagement.Business.Order
 {
-    public class OrderBusiness : BaseBusiness
+    public class OrderBusiness : BaseBusiness, IOrderBusiness
     {
+        OrderManagementContext _context;
+
+        public OrderBusiness(OrderManagementContext context)
+        {
+            _context = context;
+        }
+
         public PageDto<OrderDto> List()
         {
             //no paging etc for demo
-            var orders = SingletonContext.Instance.DbContext.Orders.Select(a => new OrderDto
+            var orders = _context.Orders.Select(a => new OrderDto
             {
                 Id = a.Id,
                 ProductName = a.ProductName,
@@ -26,7 +33,7 @@ namespace OrderManagement.Business.Order
 
         public OrderDto? Get(long id)
         {
-            var order = SingletonContext.Instance.DbContext.Orders.FirstOrDefault(a => a.Id == id);
+            var order = _context.Orders.FirstOrDefault(a => a.Id == id);
             if(order == null)
                 return null;
 
@@ -49,9 +56,9 @@ namespace OrderManagement.Business.Order
                 Status = dto.Status ?? "Pending"
             };
 
-            SingletonContext.Instance.DbContext.Orders.Add(order);
+            _context.Orders.Add(order);
 
-            SingletonContext.Instance.DbContext.SaveChanges();
+            _context.SaveChanges();
 
             return new OrderDto { Id = order.Id };
         }
